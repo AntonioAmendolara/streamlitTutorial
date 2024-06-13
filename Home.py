@@ -4,9 +4,8 @@ import pymysql,cryptography
 
 if __name__ == "__main__":
     st.set_page_config(
-        page_title="Business Analytics",
+        page_title="La mia app",
         layout="wide",
-        page_icon="🗂",
         initial_sidebar_state="expanded",
         menu_items={
             'Get Help': 'https://dbdmg.polito.it/',
@@ -15,8 +14,16 @@ if __name__ == "__main__":
         }
     )
 
-
-    col1,col2=st.columns([3,2])
+    col1, col2 = st.columns([3, 2])
     with col1:
-        st.title(":red[Live Coding] Session")
+        st.title(":hotel: Gestione stanze hotel")
+        st.markdown("## :red[Laboratorio 6] | Corso :blue[Basi di Dati]")
+    with col2:
+        st.image("images/polito_white.png")
+    
+    
+    if "connection" not in st.session_state.keys():
+        st.session_state["connection"] = False
+
+    check_connection()
   
