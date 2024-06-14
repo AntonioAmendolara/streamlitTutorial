@@ -21,7 +21,7 @@ if __name__ == "__main__":
     if check_connection():
         st.title(":moyai: Istruttori")
 
-        filtro = st.radio("Con che tipo di filtro vuoi cercare?", ["Cognome", "Data di nascita"], horizontal=True)
+        filtro = st.radio("Attraverso quale filtro vuoi selezionare gli istruttori?", ["Cognome", "Data di nascita"], horizontal=True)
 
         if filtro == "Cognome":
             cognomi = getList("Cognome", "istruttore")
@@ -45,3 +45,5 @@ if __name__ == "__main__":
             st.write(f":green[Email:] {row['Email']}")
             st.write(f":green[Telefono:] {row['Telefono']}")
             st.write("--------------------------------------------------")
+
+        

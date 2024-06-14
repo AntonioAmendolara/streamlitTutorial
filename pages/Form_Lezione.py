@@ -35,7 +35,7 @@ from utils.utils import *
 
 if __name__ == "__main__":
     st.set_page_config(
-        page_title="Insert Lesson",
+        page_title="Form Lezione",
         layout="wide",
         initial_sidebar_state="expanded",
     )
@@ -58,23 +58,28 @@ if __name__ == "__main__":
 
             submit = st.form_submit_button("submit")
         
-        if (istruttore == "") & (sala == "") & submit:
-            ok = 0
-            st.error(":rotating_light: Non hai completato tutti i campi!")
-        
-        #cerco se ci sono altre occorrenze nello slot richiesto
-        query = f"SELECT * FROM programma P, corsi C WHERE P.CodC = C.CodC AND P.Giorno = '{giorno}' AND  C.Nome = '{corso}'"
-        coincidenze = execute_query(st.session_state["connection"], query)
-        dt = pd.DataFrame(coincidenze)
-        if dt.empty & ok & submit:
-            #non ci sono problemi, posso salvare
-            queryIstruttore = f"SELECT CodFisc FROM istruttore WHERE istruttore.Cognome = '{istruttore}'"
-            queryCorso = f"SELECT CodC FROM corsi WHERE corsi.Nome = '{corso}'"
-            codIstr = execute_query(st.session_state["connection"], queryIstruttore)
-            codCorso = execute_query(st.session_state["connection"], queryCorso)
-            query = f"INSERT INTO programma(CodFisc, Giorno, OraInizio, Durata, CodC, Sala) VALUES('{codIstr}', '{giorno}', '{oraInizio}', '{durata}', '{codCorso}', '{sala}')"
-            execute_query(st.session_state["connection"], query)
-            insert_lezione(codIstr, giorno, oraInizio, durata, codCorso, sala)
-        elif (not dt.empty) & submit:
-            st.error(":rotating_light: Slot già occupato)")
+        if submit:
+            if not sala:
+                ok = 0
+                st.error(":rotating_light: Non hai completato tutti i campi!")
+            
+            #cerco se ci sono altre occorrenze nello slot richiesto
+            query = f"SELECT * FROM programma P, corsi C WHERE P.CodC = C.CodC AND P.Giorno = '{giorno}' AND  C.Nome = '{corso}'"
+            coincidenze = execute_query(st.session_state["connection"], query)
+            dt = pd.DataFrame(coincidenze)
+            if dt.empty & ok:
+                #prendo codice fiscale e codice corso
+                queryIstruttore = f"SELECT CodFisc AS I FROM istruttore WHERE Cognome = '{istruttore}'"
+                queryCorso = f"SELECT CodC AS C FROM corsi WHERE Nome = '{corso}'"
+                codIstr = execute_query(st.session_state["connection"], queryIstruttore)
+                codCorso = execute_query(st.session_state["connection"], queryCorso)
+
+                codIstr = codIstr.mappings().first()["I"]
+                codCorso = codCorso.mappings().first()["C"]
+
+                query = f"INSERT INTO programma(CodFisc, Giorno, OraInizio, Durata, CodC, Sala) VALUES('{codIstr}', '{giorno}', '{oraInizio}', '{durata}', '{codCorso}', '{sala}')"
+                execute_query(st.session_state["connection"], query)
+                insert_lezione(codIstr, giorno, oraInizio, durata, codCorso, sala)
+            elif (not dt.empty):
+                st.error(":rotating_light: Slot già occupato)")
 

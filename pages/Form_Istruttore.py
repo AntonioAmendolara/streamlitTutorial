@@ -11,7 +11,7 @@ from utils.utils import *
 
 if __name__ == "__main__":
     st.set_page_config(
-        page_title="Insert Intructor",
+        page_title="Form Istruttore",
         layout="wide",
         initial_sidebar_state="expanded",
     )
